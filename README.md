@@ -1,6 +1,7 @@
 # GECaux
 
 This is the repository containing the PIC16 code for the Global Electric Circuit project.
+
 Other Global Electric Circuit project repositories can be found at:
 
 | Repository                                                                  | Description         |
