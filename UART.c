@@ -13,8 +13,13 @@ void InitUART() {
 }
 
 void SendChar_UART(char c) {
-    int i;
     TXREG=c;
     while (!TXSTAbits.TRMT);
-    for (i=0;i<10;i++);
+}
+
+void SendString_UART(char *s, int length)
+{
+    int i;
+    for (i = 0;i < length; i++)          //loop through each character of the string
+        SendChar_UART(*(s++)); //send the current character
 }

@@ -18,6 +18,8 @@
       <itemPath>UART.h</itemPath>
       <itemPath>GPIO.h</itemPath>
       <itemPath>GPIO.c</itemPath>
+      <itemPath>Watchdog.c</itemPath>
+      <itemPath>Watchdog.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

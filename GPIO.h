@@ -24,7 +24,8 @@ pin17 | RA2  <->  pin18  | RE8
 #define	GPIO_H
 
 void InitGPIO();
-
 char SendChar_GPIO(char c, char transmit);
+void SendString_GPIO(char *s);
+
 #endif	/* GPIO_H */
 
