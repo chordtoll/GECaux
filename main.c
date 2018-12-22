@@ -31,15 +31,55 @@ int main() {
     InitGPIO();
     InitWatchdog();
     char result = 0;
-    //16000000/(64*(25+1))
 
     while (1) 
     {
        // while (!PORTAbits.RA2);
-        result = SendChar_GPIO(0,0);
-        if(result == 106)
+        if(ExchangeChar_GPIO(0,0) == 'C')
         {
-            SendString_UART(TERMINATE_M, 20);
+            SendChar_UART('C');
+            ResetWatchdog();
+            if(ExchangeChar_GPIO(0,0) == 'U')
+            {
+                SendChar_UART('U');
+                ResetWatchdog();
+                if(ExchangeChar_GPIO(0,0) == 'T')
+                {
+                    ExchangeChar_GPIO('?',1);
+                    SendChar_UART('T');
+                    ResetWatchdog();
+                    if(ExchangeChar_GPIO(0,0) == 'D')
+                    {
+                        SendChar_UART('D');
+                        ResetWatchdog();
+                        if(ExchangeChar_GPIO(0,0) == 'O')
+                        {
+                            SendChar_UART('O');
+                            ResetWatchdog();
+                            if(ExchangeChar_GPIO(0,0) == '_')
+                            {
+                                SendChar_UART('_');
+                                ResetWatchdog();
+                                if(ExchangeChar_GPIO(0,0) == 'I')
+                                {
+                                    SendChar_UART('I');
+                                    ResetWatchdog();
+                                    if(ExchangeChar_GPIO(0,0) == 'T')
+                                    {
+                                        ExchangeChar_GPIO('K',1);
+                                        SendChar_UART('T');
+                                        while(1)
+                                        {
+                                            ResetWatchdog();
+                                            SendChar_UART(ExchangeChar_GPIO(0,0));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         /*if(PORTCbits.RC0)
         {
