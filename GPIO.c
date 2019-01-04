@@ -16,21 +16,21 @@ void InitGPIO() {
     ANSEL=0;            //disable analog functions on PortC
     ANSELH=0;
     OUT_TxEnable = 0;   //set transmitting flag to 0
-    OUT_DATA0 = 0;
+    OUT_DATA0 = 0;      //set transmitting data to 0
     OUT_DATA1 = 0;
 }
 
 char ExchangeChar_GPIO(char c, char transmit) {
     unsigned int qByte = 0;    //initialize quarter-byte counter
-    char result = 0;           //data received from PIC32
+    char result = 0;            //data received from PIC32
     
     if(transmit)
-      OUT_TxEnable = 1;        //set transmit enable signal
+      OUT_TxEnable = 1;         //set transmit enable signal
     else
       OUT_TxEnable = 0;
     
     while(!IN_TxEnable){}
-    while(IN_CLK0 || IN_CLK1){}//wait for the 0th quarter-byte on the clock
+    while(IN_CLK0 || IN_CLK1){} //wait for the 0th quarter-byte on the clock
     
     do                                                         //loop for all four quarter-bytes
     {   
@@ -44,7 +44,6 @@ char ExchangeChar_GPIO(char c, char transmit) {
         unsigned int cCLK = IN_CLK0;                                 //store the current value of clock bit 0
         while(cCLK == IN_CLK0){}                                     //wait until clock bit 0 changes
 
-        //wait for the clock to change
         qByte = IN_CLK0 + IN_CLK1 * 2;                               //update the quarter byte counter
     }
     while(qByte != 0);
@@ -54,6 +53,16 @@ char ExchangeChar_GPIO(char c, char transmit) {
 }
 
 void SendString_GPIO(char *s) {
-    for (;*s;s++)              //loop up to the last character of the string
+    for (;*s;s++)                  //loop up to the last character of the string
         ExchangeChar_GPIO(*s, 1);  //send the current character
+}
+
+int ReadString_GPIO(char *s)
+{
+    for(;*s;s++)                         //loop through the string
+    {
+        if(*s != ExchangeChar_GPIO(0,0)) //if the next read character is the same as the next character in the string
+            return 0;                    //return a false condition
+    }
+    return 1;                            //return a true condition
 }

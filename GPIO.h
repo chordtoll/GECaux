@@ -23,9 +23,17 @@ pin17 | RA2  <->  pin18  | RE8
 #ifndef GPIO_H
 #define	GPIO_H
 
+//initialize GPIO
 void InitGPIO();
+
+//send a character over GPIO to the PIC32, returns the received character from the PIC32
 char ExchangeChar_GPIO(char c, char transmit);
+
+//sends a string of characters over GPIO to the PIC 32
 void SendString_GPIO(char *s);
+
+//returns 1 is the passed string matches what is being read from the PIC32, 0 if not
+int ReadString_GPIO(char *s);
 
 #endif	/* GPIO_H */
 

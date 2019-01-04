@@ -27,96 +27,26 @@ char TERMINATE_M[] = {0x7E,0x00,0x10,0x17,0x03,0x00,0x13,0xA2,0x00,0x40,0xA5,0x4
 char SUCCESS_M[] = {0x7E,0x00,0x0F,0x97,0x03,0x00,0x13,0xA2,0x00,0x40,0xA5,0x42,0xD5,0xFF,0xFE,0x44,0x31,0x00,0x42};
 
 int main() {
-    InitUART();
-    InitGPIO();
-    InitWatchdog();
-    char result = 0;
+    InitUART();     //initialize UART
+    InitGPIO();     //initialize GPIO
+    InitWatchdog(); //initialize watchdog
 
     while (1) 
     {
-       // while (!PORTAbits.RA2);
-        if(ExchangeChar_GPIO(0,0) == 'C')
+        if(ReadString_GPIO("CUT"))                //if "CUT" was received over GPIO
         {
-            SendChar_UART('C');
-            ResetWatchdog();
-            if(ExchangeChar_GPIO(0,0) == 'U')
+            ExchangeChar_GPIO('?',1);             //send a '?' over GPIO
+            ResetWatchdog();                      //reset the watchdog
+            if(ReadString_GPIO("DO_IT"))          //if "DO_IT" was received over GPIO
             {
-                SendChar_UART('U');
-                ResetWatchdog();
-                if(ExchangeChar_GPIO(0,0) == 'T')
-                {
-                    ExchangeChar_GPIO('?',1);
-                    SendChar_UART('T');
-                    ResetWatchdog();
-                    if(ExchangeChar_GPIO(0,0) == 'D')
-                    {
-                        SendChar_UART('D');
-                        ResetWatchdog();
-                        if(ExchangeChar_GPIO(0,0) == 'O')
-                        {
-                            SendChar_UART('O');
-                            ResetWatchdog();
-                            if(ExchangeChar_GPIO(0,0) == '_')
-                            {
-                                SendChar_UART('_');
-                                ResetWatchdog();
-                                if(ExchangeChar_GPIO(0,0) == 'I')
-                                {
-                                    SendChar_UART('I');
-                                    ResetWatchdog();
-                                    if(ExchangeChar_GPIO(0,0) == 'T')
-                                    {
-                                        ExchangeChar_GPIO('K',1);
-                                        SendChar_UART('T');
-                                        while(1)
-                                        {
-                                            ResetWatchdog();
-                                            SendChar_UART(ExchangeChar_GPIO(0,0));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                ResetWatchdog();                  //reset the watchdog
+                SendString_UART(TERMINATE_M, 20); //send the terminate message over UART
+                
+                // this is where we wait for a response from XBeeR
+                
+                ExchangeChar_GPIO('K',1);         //send a 'K' over GPIO
             }
         }
-        /*if(PORTCbits.RC0)
-        {
-            SendChar_UART('1');
-        }
-        else if(PORTCbits.RC1)
-        {
-            SendChar_UART('2');
-        }
-        else if(PORTCbits.RC2)
-        {
-            SendChar_UART('3');
-        }
-        else if(PORTCbits.RC3)
-        {
-            SendChar_UART('4');
-        }
-        else if(PORTCbits.RC4)
-        {
-            SendChar_UART('5');
-        }
-        else if(PORTCbits.RC5)
-        {
-            SendChar_UART('6');
-        }
-        else if(PORTCbits.RC6)
-        {
-            SendChar_UART('7');
-        }
-        else if(PORTCbits.RC7)
-        {
-            SendChar_UART('8');
-        }*/
-        
-        /*SendChar_UART(PORTC);
-        while (PORTAbits.RA2);
-        for(i = 0; i < 1000; i++);*/
     }
     return 0;
 }
