@@ -27,6 +27,7 @@ void SendString_UART(char *s, int length)
 
 char ReadChar_UART()
 {
+    while(!PIR1bits.RCIF);
     return RCREG; //return the top character in the receiving FIFO
 }
 
