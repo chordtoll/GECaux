@@ -20,6 +20,8 @@
       <itemPath>GPIO.c</itemPath>
       <itemPath>Watchdog.c</itemPath>
       <itemPath>Watchdog.h</itemPath>
+      <itemPath>Timing.c</itemPath>
+      <itemPath>Timing.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -40,7 +42,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>2.00</languageToolchainVersion>
+        <languageToolchainVersion>1.45</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <compileType>
