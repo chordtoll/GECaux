@@ -15,10 +15,18 @@ void InitTimer()
 
 void WaitS_Timer(int s)
 {
-    ResetWatchdog();
-    TMR1H = 0;                                           //set counter registers to 0
-    TMR1L = 0; 
-    T1CONbits.TMR1ON = 1;                                //start the timer
-    while(((TMR1H << 8) + TMR1L) < (s * TICK_SECONDS)){} //wait for the timer to reach the target time
-    T1CONbits.TMR1ON = 0;                                //stop the timer
+    int i, j;
+    for(i = 0; i < s; i++)                                    //loop for number of seconds
+    {
+        ResetWatchdog();                                     
+        TMR1H = 0xFF - ((0xFFFF /4) >> 8);                    //set counter registers to start at 1/4 capacity from overflowing
+        TMR1L = 0xFF - (((0xFFFF /4) << 8) >> 8);
+        T1CONbits.TMR1ON = 1;                                 //start the timer
+        for(j = 0; j < 16; j++)                               //loop 16 times (one period of the timer ~= 1/15.25 seconds)
+        {
+            while(!PIR1bits.TMR1IF){}                         //wait for the counter registers to overflow
+            PIR1bits.TMR1IF = 0;                              //clear the timer overflow flag
+        }
+        T1CONbits.TMR1ON = 0;                                 //stop the timer
+    }
 }

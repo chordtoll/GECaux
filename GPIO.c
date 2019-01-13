@@ -32,7 +32,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     while(!IN_TxEnable){}
     while(IN_CLK0 || IN_CLK1){} //wait for the 0th quarter-byte on the clock
     
-    do                                                         //loop for all four quarter-bytes
+    do                                                               //loop for all four quarter-bytes
     {   
         OUT_DATA0 = (c & (1 << (qByte * 2))) >> (qByte * 2);         //set 0th bit of current quarter-byte
         OUT_DATA1 = (c & (1 << (1 + qByte * 2))) >> (1 + qByte * 2); //set 1st bit of current quarter-byte
