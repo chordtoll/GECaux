@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "pic16f689.h"
+#include "Timing.h"
 
 #define OUT_DATA1 PORTCbits.RC7
 #define OUT_DATA0 PORTCbits.RC6
@@ -10,18 +11,23 @@
 #define IN_DATA1 PORTCbits.RC1
 #define IN_DATA0 PORTCbits.RC0
 
-void InitGPIO() {
-    
-    TRISC = 0b00110111; //set each PortC pin to their corresponding directions
-    ANSEL=0;            //disable analog functions on PortC
+#define XBEE_SLEEP PORTAbits.RA5 //PIN IS A PLACEHOLDER
+
+void InitGPIO()
+{
+    TRISAbits.TRISA5 = 1; //set XBee sleep pin to output (PLACEHOLDER)
+    TRISC = 0b00110111;   //set each PortC pin to their corresponding directions
+    ANSEL=0;              //disable analog functions on all pins
     ANSELH=0;
-    OUT_TxEnable = 0;   //set transmitting flag to 0
-    OUT_DATA0 = 0;      //set transmitting data to 0
+    OUT_TxEnable = 0;     //set transmitting flag to 0
+    OUT_DATA0 = 0;        //set transmitting data to 0
     OUT_DATA1 = 0;
+    SleepXBee();          //put the XBee to sleep
 }
 
-char ExchangeChar_GPIO(char c, char transmit) {
-    unsigned int qByte = 0;    //initialize quarter-byte counter
+char ExchangeChar_GPIO(char c, char transmit)
+{
+    unsigned int qByte = 0;     //initialize quarter-byte counter
     char result = 0;            //data received from PIC32
     
     if(transmit)
@@ -52,7 +58,8 @@ char ExchangeChar_GPIO(char c, char transmit) {
     return result;                                                   //return the data received by the PIC32
 }
 
-void SendString_GPIO(char *s) {
+void SendString_GPIO(char *s)
+{
     for (;*s;s++)                  //loop up to the last character of the string
         ExchangeChar_GPIO(*s, 1);  //send the current character
 }
@@ -65,4 +72,15 @@ int ReadString_GPIO(char *s)
             return 0;                    //return a false condition
     }
     return 1;                            //return a true condition
+}
+
+void WakeXBee()
+{
+    XBEE_SLEEP = 0; //output a low signal on sleep pin to wake the XBee
+    WaitS(1);       //wait for 1 second to give the Xbee time to wake up
+}
+
+void SleepXBee()
+{
+    XBEE_SLEEP = 1; //output a high signal on sleep pin to sleep XBee
 }

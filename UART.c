@@ -40,3 +40,38 @@ void ReadString_UART(char *s, int length)
         s[i] = RCREG;           //store the character in its appropriate index
     }
 }
+
+int Cutdown()
+{
+    int i;                               //looping variable
+    char message[20];                    //holds message received from XBeeR
+    WakeXBee();                          //wake the XBee up
+    SendString_UART(TERMINATE_M, 20);    //send the terminate message over UART
+    for(i = 0; i < 25; i++)              //loop 25 times (25 seconds)
+    {
+        ResetWatchdog();                 //reset the watchdog
+        WaitS(1);                        //wait for 1 second
+        if(DataInFIFO)                   //if data was received over UART
+        {
+           ReadString_UART(message, 20); //read in the message and store it
+           SleepXBee();                  //put the XBee to sleep
+           return ParseMessage(message); //parse the message and return status
+        }
+    }
+    SleepXBee();                         //put the XBee to sleep
+    return NO_MESSAGE;                   //return error code for no message
+}
+
+int ParseMessage(char* message)
+{
+    int index = 0;
+    while(*message)
+        if(message[index] != SUCCESS_M[index])
+            return UNEXPECTED_MESSAGE;
+    return SUCCESS;
+}
+
+int DataInFIFO()
+{
+    return PIR1bits.RCIF; //return FIFO status flag
+}

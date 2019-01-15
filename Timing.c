@@ -13,7 +13,7 @@ void InitTimer()
     PIR1bits.TMR1IF = 0;   //clear timer interrupt flag
 }
 
-void WaitS_Timer(int s)
+void WaitS(int s)
 {
     int i, j;
     for(i = 0; i < s; i++)                                    //loop for number of seconds

@@ -24,9 +24,7 @@
 #include "Watchdog.h"
 #include "Timing.h"
 
-char TERMINATE_M[] = {0x7E,0x00,0x10,0x17,0x03,0x00,0x13,0xA2,0x00,0x40,0xA5,0x42,0xD5,0xFF,0xFE,0x02,0x44,0x31,0x05,0xBB};
-char SUCCESS_M[] = {0x7E,0x00,0x0F,0x97,0x03,0x00,0x13,0xA2,0x00,0x40,0xA5,0x42,0xD5,0xFF,0xFE,0x44,0x31,0x00,0x42};
-
+#define CUTDOWN_RETRIES 5 //number of times to attempt to send the cutdown message
 int main() {
     InitUART();     //initialize UART
     InitGPIO();     //initialize GPIO
@@ -37,17 +35,32 @@ int main() {
         if(ReadString_GPIO("CUT"))                //if "CUT" was received over GPIO
         {
             ExchangeChar_GPIO('?',1);             //send a '?' over GPIO
-            ResetWatchdog();                      //reset the watchdog
             if(ReadString_GPIO("DO_IT"))          //if "DO_IT" was received over GPIO
             {
-                ResetWatchdog();                  //reset the watchdog
-                SendString_UART(TERMINATE_M, 20); //send the terminate message over UART
-                
-                // this is where we wait for a response from XBeeR
-                
-                ExchangeChar_GPIO('K',1);         //send a 'K' over GPIO
+                int retries = 0;                  //counter for number of retries attempted
+                int cutdown_code = NO_MESSAGE;    //holds return from cutdown
+                while(cutdown_code != SUCCESS  && retries < CUTDOWN_RETRIES) //loop until max retries attempted, or a successful cutdown was executed
+                {
+                    cutdown_code = Cutdown();     //attempt to cutdown and store the return code
+                    ++retries;
+                }
+                switch(cutdown_code)
+                {
+                    case SUCCESS:
+                        ExchangeChar_GPIO('K',1); //send a 'K' over GPIO (success)
+                        break;
+                    
+                    case UNEXPECTED_MESSAGE:
+                        ExchangeChar_GPIO('U',1); //send a 'U' over GPIO (Unexpected response)
+                        break;
+                        
+                    case NO_MESSAGE:
+                        ExchangeChar_GPIO('N',1); //send an 'N' over GPIO (No response)
+                        break;
+                }
             }
         }
+        ResetWatchdog();
     }
     return 0;
 }

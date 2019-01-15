@@ -35,5 +35,10 @@ void SendString_GPIO(char *s);
 //returns 1 is the passed string matches what is being read from the PIC32, 0 if not
 int ReadString_GPIO(char *s);
 
-#endif	/* GPIO_H */
+//wakes the XBee up
+void WakeXBee();
 
+//puts the Xbee to sleep
+void SleepXBee();
+
+#endif	/* GPIO_H */

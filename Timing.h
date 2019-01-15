@@ -12,6 +12,6 @@
 void InitTimer();
 
 //wait for s seconds
-void WaitS_Timer(int s);
+void WaitS(int s);
 
 #endif	/* TIMING_H */
