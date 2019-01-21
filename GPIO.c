@@ -15,14 +15,15 @@
 
 void InitGPIO()
 {
-    TRISAbits.TRISA5 = 1; //set XBee sleep pin to output (PLACEHOLDER)
+    TRISAbits.TRISA5 = 0; //set XBee sleep pin to output (PLACEHOLDER)
+    TRISAbits.TRISA2 = 0;
     TRISC = 0b00110111;   //set each PortC pin to their corresponding directions
     ANSEL=0;              //disable analog functions on all pins
     ANSELH=0;
     OUT_TxEnable = 0;     //set transmitting flag to 0
     OUT_DATA0 = 0;        //set transmitting data to 0
     OUT_DATA1 = 0;
-    SleepXBee();          //put the XBee to sleep
+    XBEE_SLEEP = 1;       //put the XBee to sleep
 }
 
 char ExchangeChar_GPIO(char c, char transmit)

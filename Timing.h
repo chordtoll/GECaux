@@ -14,4 +14,10 @@ void InitTimer();
 //wait for s seconds
 void WaitS(int s);
 
+//starts the timer
+void StartTimer();
+
+//checks to see if a timer period has passed, stops timer and clears overflow flag if so
+int PeriodPassed();
+
 #endif	/* TIMING_H */

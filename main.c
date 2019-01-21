@@ -19,17 +19,20 @@
 
 #include <xc.h>
 #include "pic16f689.h"
+#include "Watchdog.h"
 #include "UART.h"
 #include "GPIO.h"
-#include "Watchdog.h"
 #include "Timing.h"
 
 #define CUTDOWN_RETRIES 5 //number of times to attempt to send the cutdown message
+
 int main() {
-    InitUART();     //initialize UART
-    InitGPIO();     //initialize GPIO
-    InitWatchdog(); //initialize watchdog
-    InitTimer();    //initialize timer
+    InitUART();       //initialize UART
+    InitGPIO();       //initialize GPIO
+    InitWatchdog();   //initialize watchdog
+    InitTimer();      //initialize timer
+    int retries;      //counter for number of retries attempted
+    int cutdown_code; //holds return from cutdown
     while (1) 
     {
         if(ReadString_GPIO("CUT"))                //if "CUT" was received over GPIO
@@ -37,14 +40,14 @@ int main() {
             ExchangeChar_GPIO('?',1);             //send a '?' over GPIO
             if(ReadString_GPIO("DO_IT"))          //if "DO_IT" was received over GPIO
             {
-                int retries = 0;                  //counter for number of retries attempted
-                int cutdown_code = NO_MESSAGE;    //holds return from cutdown
-                while(cutdown_code != SUCCESS  && retries < CUTDOWN_RETRIES) //loop until max retries attempted, or a successful cutdown was executed
+                retries = 0;                      //set counter to initial value
+                cutdown_code = NO_MESSAGE;        //set cutdown code to initial value
+                while(cutdown_code != SUCCESS  && retries++ < CUTDOWN_RETRIES) //loop until max retries attempted, or a successful cutdown was executed
                 {
                     cutdown_code = Cutdown();     //attempt to cutdown and store the return code
-                    ++retries;
                 }
-                switch(cutdown_code)
+                ResetWatchdog();                  //reset the watchdog
+                switch(cutdown_code)              //send the status of the cutdown
                 {
                     case SUCCESS:
                         ExchangeChar_GPIO('K',1); //send a 'K' over GPIO (success)
@@ -59,9 +62,8 @@ int main() {
                         break;
                 }
             }
-        }
+        }                
         ResetWatchdog();
     }
     return 0;
 }
-
