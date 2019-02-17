@@ -35,32 +35,29 @@ int main() {
     int cutdown_code; //holds return from cutdown
     while (1) 
     {
-        if(ReadString_GPIO("CUT"))                //if "CUT" was received over GPIO
+        if(ReadString_GPIO("CUT"))            //if "CUT" was received over GPIO
         {
-            ExchangeChar_GPIO('?',1);             //send a '?' over GPIO
-            if(ReadString_GPIO("DO_IT"))          //if "DO_IT" was received over GPIO
+            ExchangeChar_GPIO('?',1);         //send a '?' over GPIO
+            retries = 0;                      //set counter to initial value
+            cutdown_code = NO_MESSAGE;        //set cutdown code to initial value
+            while(cutdown_code != SUCCESS  && retries++ < CUTDOWN_RETRIES) //loop until max retries attempted, or a successful cutdown was executed
             {
-                retries = 0;                      //set counter to initial value
-                cutdown_code = NO_MESSAGE;        //set cutdown code to initial value
-                while(cutdown_code != SUCCESS  && retries++ < CUTDOWN_RETRIES) //loop until max retries attempted, or a successful cutdown was executed
-                {
-                    cutdown_code = Cutdown();     //attempt to cutdown and store the return code
-                }
-                ResetWatchdog();                  //reset the watchdog
-                switch(cutdown_code)              //send the status of the cutdown
-                {
-                    case SUCCESS:
-                        ExchangeChar_GPIO('K',1); //send a 'K' over GPIO (success)
-                        break;
-                    
-                    case UNEXPECTED_MESSAGE:
-                        ExchangeChar_GPIO('U',1); //send a 'U' over GPIO (Unexpected response)
-                        break;
-                        
-                    case NO_MESSAGE:
-                        ExchangeChar_GPIO('N',1); //send an 'N' over GPIO (No response)
-                        break;
-                }
+                cutdown_code = Cutdown();     //attempt to cutdown and store the return code
+            }
+            ResetWatchdog();                  //reset the watchdog
+            switch(cutdown_code)              //send the status of the cutdown
+            {
+                case SUCCESS:
+                    ExchangeChar_GPIO('K',1); //send a 'K' over GPIO (success)
+                    break;
+
+                case UNEXPECTED_MESSAGE:
+                    ExchangeChar_GPIO('U',1); //send a 'U' over GPIO (Unexpected response)
+                    break;
+
+                case NO_MESSAGE:
+                    ExchangeChar_GPIO('N',1); //send an 'N' over GPIO (No response)
+                    break;
             }
         }                
         ResetWatchdog();
