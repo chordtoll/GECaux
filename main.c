@@ -59,7 +59,26 @@ int main() {
                     ExchangeChar_GPIO('N',1); //send an 'N' over GPIO (No response)
                     break;
             }
-        }                
+        }
+        else if(PORTCbits.RC0 && PORTCbits.RC1)
+        {
+            int i, ppas;
+            for(i = 0; i < 8; ++i)
+            {
+                ppas = 0;
+                StartTimer();
+                while(!ppas && PORTCbits.RC0 && PORTCbits.RC1)
+                {
+                    ppas = PeriodPassed;
+                }
+            }
+            if(ppas)
+            {
+                PORTAbits.RA2 = 1;
+                while(PORTCbits.RC0 && PORTCbits.RC1){}
+                PORTAbits.RA2 = 0;
+            }
+        }
         ResetWatchdog();
     }
     return 0;

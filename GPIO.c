@@ -11,18 +11,20 @@
 #define IN_DATA1 PORTCbits.RC1
 #define IN_DATA0 PORTCbits.RC0
 
+#define TIME_OUT PORTAbits.RA2
+
 #define XBEE_SLEEP PORTAbits.RA5 //PIN IS A PLACEHOLDER
 
 void InitGPIO()
 {
-    TRISAbits.TRISA5 = 0; //set XBee sleep pin to output (PLACEHOLDER)
-    TRISAbits.TRISA2 = 0;
+    TRISA = 0b100100;     //set timing/xbee pins to output
     TRISC = 0b00110111;   //set each PortC pin to their corresponding directions
     ANSEL=0;              //disable analog functions on all pins
     ANSELH=0;
     OUT_TxEnable = 0;     //set transmitting flag to 0
     OUT_DATA0 = 0;        //set transmitting data to 0
     OUT_DATA1 = 0;
+    TIME_OUT = 0;         //clear time pin
     XBEE_SLEEP = 1;       //put the XBee to sleep
 }
 
@@ -36,8 +38,8 @@ char ExchangeChar_GPIO(char c, char transmit)
     else
       OUT_TxEnable = 0;
     
-    while(!IN_TxEnable){}
-    while(IN_CLK0 || IN_CLK1){} //wait for the 0th quarter-byte on the clock
+    while(!IN_TxEnable){if(IN_DATA1 && IN_DATA0) {return 0;}}
+    while(IN_CLK0 || IN_CLK1){if(IN_DATA1 && IN_DATA0) {return 0;}} //wait for the 0th quarter-byte on the clock
     
     do                                                               //loop for all four quarter-bytes
     {   
