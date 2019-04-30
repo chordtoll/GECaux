@@ -8,7 +8,7 @@
 // 'C' source line config statements
 // CONFIG
 #pragma config FOSC = EXTRCCLK  // Oscillator Selection bits (RC oscillator: CLKOUT function on RA4/OSC2/CLKOUT pin, RC on RA5/OSC1/CLKIN)
-#pragma config WDTE = ON        // Watchdog Timer Enable bit (WDT enabled)
+#pragma config WDTE = OFF       // Watchdog Timer Enable bit (WDT enabled)
 #pragma config PWRTE = OFF      // Power-up Timer Enable bit (PWRT disabled)
 #pragma config MCLRE = ON       // MCLR Pin Function Select bit (MCLR pin function is MCLR)
 #pragma config CP = OFF         // Code Protection bit (Program memory code protection is disabled)
@@ -29,12 +29,14 @@
 int main() {
     InitUART();       //initialize UART
     InitGPIO();       //initialize GPIO
-    InitWatchdog();   //initialize watchdog
+    //InitWatchdog(); //initialize watchdog
     InitTimer();      //initialize timer
     int retries;      //counter for number of retries attempted
     int cutdown_code; //holds return from cutdown
     while (1) 
     {
+        SleepXBee();                          //put the XBee to sleep
+        SleepPic();                           //put the PIC to sleep
         if(ReadString_GPIO("CUT"))            //if "CUT" was received over GPIO
         {
             ExchangeChar_GPIO('?',1);         //send a '?' over GPIO
@@ -60,7 +62,7 @@ int main() {
                     break;
             }
         }                
-        ResetWatchdog();
+        //ResetWatchdog();
     }
     return 0;
 }

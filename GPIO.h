@@ -41,4 +41,7 @@ void WakeXBee();
 //puts the Xbee to sleep
 void SleepXBee();
 
+//puts the PIC to sleep, will wake up when state of RA2 is changed
+void SleepPic();
+
 #endif	/* GPIO_H */

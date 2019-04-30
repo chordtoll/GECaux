@@ -12,11 +12,15 @@
 #define IN_DATA0 PORTCbits.RC0
 
 #define XBEE_SLEEP PORTAbits.RA5 //PIN IS A PLACEHOLDER
+#define PIC_SLEEP PORTAbits.RA2
 
 void InitGPIO()
 {
-    TRISAbits.TRISA5 = 0; //set XBee sleep pin to output (PLACEHOLDER)
-    TRISAbits.TRISA2 = 0;
+    INTCONbits.RABIE = 1; //enable interrupts on registers A and B
+    IOCAbits.IOCA2 = 1;   //enable interrupt-on-change on RA2
+    INTCONbits.RABIF = 0; //clear the interrupt-on-change flag
+    TRISAbits.TRISA2 = 1; //set RA2 to input
+    TRISAbits.TRISA5 = 0; //set XBee sleep pin to output
     TRISC = 0b00110111;   //set each PortC pin to their corresponding directions
     ANSEL=0;              //disable analog functions on all pins
     ANSELH=0;
@@ -24,6 +28,7 @@ void InitGPIO()
     OUT_DATA0 = 0;        //set transmitting data to 0
     OUT_DATA1 = 0;
     XBEE_SLEEP = 1;       //put the XBee to sleep
+    PIC_SLEEP;
 }
 
 char ExchangeChar_GPIO(char c, char transmit)
@@ -36,8 +41,9 @@ char ExchangeChar_GPIO(char c, char transmit)
     else
       OUT_TxEnable = 0;
     
-    while(!IN_TxEnable){}
-    while(IN_CLK0 || IN_CLK1){} //wait for the 0th quarter-byte on the clock
+    if(!IN_TxEnable && !transmit) //if not transmitting or receiving,
+        return 0;                 //break out of exchange
+    while(IN_CLK0 || IN_CLK1){}   //wait for the 0th quarter-byte on the clock
     
     do                                                               //loop for all four quarter-bytes
     {   
@@ -84,4 +90,13 @@ void WakeXBee()
 void SleepXBee()
 {
     XBEE_SLEEP = 1; //output a high signal on sleep pin to sleep XBee
+}
+
+void SleepPic()
+{
+    PIC_SLEEP;            //store current state of sleep pin
+    __asm("SLEEP");       //go to sleep
+                          //WAKE
+    INTCONbits.RABIF = 0; //clear interrupt flag
+    PIC_SLEEP;            //store new state of sleep pin
 }
