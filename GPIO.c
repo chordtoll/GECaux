@@ -21,6 +21,7 @@ void InitGPIO()
     INTCONbits.RABIF = 0; //clear the interrupt-on-change flag
     TRISAbits.TRISA2 = 1; //set RA2 to input
     TRISAbits.TRISA5 = 0; //set XBee sleep pin to output
+    TRISBbits.TRISB6 = 0;
     TRISC = 0b00110111;   //set each PortC pin to their corresponding directions
     ANSEL=0;              //disable analog functions on all pins
     ANSELH=0;
@@ -41,8 +42,7 @@ char ExchangeChar_GPIO(char c, char transmit)
     else
       OUT_TxEnable = 0;
     
-    if(!IN_TxEnable && !transmit) //if not transmitting or receiving,
-        return 0;                 //break out of exchange
+    while(!IN_TxEnable){}
     while(IN_CLK0 || IN_CLK1){}   //wait for the 0th quarter-byte on the clock
     
     do                                                               //loop for all four quarter-bytes

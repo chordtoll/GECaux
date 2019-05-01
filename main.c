@@ -35,8 +35,11 @@ int main() {
     int cutdown_code; //holds return from cutdown
     while (1) 
     {
+        PORTBbits.RB6 = 0;
+        WaitS(3);
         SleepXBee();                          //put the XBee to sleep
         SleepPic();                           //put the PIC to sleep
+        PORTBbits.RB6 = 1;
         if(ReadString_GPIO("CUT"))            //if "CUT" was received over GPIO
         {
             ExchangeChar_GPIO('?',1);         //send a '?' over GPIO
