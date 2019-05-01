@@ -18,7 +18,7 @@ void WaitS(int s)
     int i, j;                         //looping variables
     for(i = 0; i < s; i++)            //loop for number of seconds
     {
-        ResetWatchdog();              //reset the watchdog                     
+        //ResetWatchdog();              //reset the watchdog
         TMR1H = 0;                    //set timer counters to 0
         TMR1L = 0;
         PIR1bits.TMR1IF = 0;          //clear the timer overflow flag

@@ -66,7 +66,7 @@ int Cutdown()
     StartTimer();                        //start timer
     while(period < 47)                   //loop for 47 timer periods, 25 seconds (47 * 0.524 ~= 25)
     {
-        ResetWatchdog();                 //reset the watchdog
+        //ResetWatchdog();                 //reset the watchdog
         while(DataInFIFO())              //if data was received over UART
         {
             message[index++] = ReadChar_UART(); //read the next character into message

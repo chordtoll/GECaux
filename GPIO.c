@@ -11,7 +11,7 @@
 #define IN_DATA1 PORTCbits.RC1
 #define IN_DATA0 PORTCbits.RC0
 
-#define XBEE_SLEEP PORTAbits.RA5 //PIN IS A PLACEHOLDER
+#define XBEE_SLEEP PORTBbits.RB6
 #define PIC_SLEEP PORTAbits.RA2
 
 void InitGPIO()
@@ -20,7 +20,6 @@ void InitGPIO()
     IOCAbits.IOCA2 = 1;   //enable interrupt-on-change on RA2
     INTCONbits.RABIF = 0; //clear the interrupt-on-change flag
     TRISAbits.TRISA2 = 1; //set RA2 to input
-    TRISAbits.TRISA5 = 0; //set XBee sleep pin to output
     TRISBbits.TRISB6 = 0;
     TRISC = 0b00110111;   //set each PortC pin to their corresponding directions
     ANSEL=0;              //disable analog functions on all pins
@@ -29,7 +28,6 @@ void InitGPIO()
     OUT_DATA0 = 0;        //set transmitting data to 0
     OUT_DATA1 = 0;
     XBEE_SLEEP = 1;       //put the XBee to sleep
-    PIC_SLEEP;
 }
 
 char ExchangeChar_GPIO(char c, char transmit)
