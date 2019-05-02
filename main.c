@@ -33,11 +33,11 @@ int main() {
     InitTimer();      //initialize timer
     int retries;      //counter for number of retries attempted
     int cutdown_code; //holds return from cutdown
+    WaitS(5);
+    SleepXBee();                          //put the XBee to sleep
+    SleepPic();                           //put the PIC to sleep
     while (1) 
     {
-        WaitS(5);
-        SleepXBee();                          //put the XBee to sleep
-        SleepPic();                           //put the PIC to sleep
         if(ReadString_GPIO("CUT"))            //if "CUT" was received over GPIO
         {
             ExchangeChar_GPIO('?',1);         //send a '?' over GPIO
