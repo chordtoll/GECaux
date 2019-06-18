@@ -8,6 +8,8 @@
 #ifndef TIMING_H
 #define	TIMING_H
 
+#define TICKS_25SECONDS 47
+
 //initialize timer
 void InitTimer();
 

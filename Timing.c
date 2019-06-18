@@ -2,7 +2,6 @@
 #include "pic16f689.h"
 #include "Watchdog.h"
 
-#define TICK_SECONDS 1000000
 void InitTimer()
 {
     T1CONbits.TMR1GE = 0;  //set timer to always count

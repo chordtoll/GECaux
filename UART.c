@@ -4,6 +4,9 @@
 #include "watchdog.h"
 #include "Timing.h"
 
+#define TERMINATE_M_LENGTH 20
+#define SUCCESS_M_LENGTH 19
+
 char TERMINATE_M[] = {0x7E,0x00,0x10,0x17,0x03,0x00,0x13,0xA2,0x00,0x40,0xA5,0x42,0xD5,0xFF,0xFE,0x02,0x44,0x31,0x05,0xBB};
 char SUCCESS_M[] =   {0x7E,0x00,0x0F,0x97,0x03,0x00,0x13,0xA2,0x00,0x40,0xA5,0x42,0xD5,0xFF,0xFE,0x44,0x31,0x00,0x42};
 enum CUTDOWN_CODE{SUCCESS, UNEXPECTED_MESSAGE, NO_MESSAGE};
@@ -67,25 +70,20 @@ void UpdateMessage(char* message, char newChar)
 int Cutdown()
 {
     int period = 0;                      //counter for number of timer periods passed
-    //int index = 0;                       //counter for characters on received message
-    char message[19];                    //holds message received from XBeeR
+    char message[SUCCESS_M_LENGTH];      //holds message received from XBeeR
     WakeXBee();                          //wake the XBee up
-    SendString_UART(TERMINATE_M, 20);    //send the terminate message over UART
+    SendString_UART(TERMINATE_M, TERMINATE_M_LENGTH); //send the terminate message over UART
     StartTimer();                        //start timer
-    while(period < 47)                   //loop for 47 timer periods, 25 seconds (47 * 0.524 ~= 25)
+    while(period < TICKS_25SECONDS)                   //loop for 47 timer periods, 25 seconds (47 * 0.524 ~= 25)
     {
-        //ResetWatchdog();                 //reset the watchdog
         while(DataInFIFO())              //if data was received over UART
         {
             UpdateMessage(message, ReadChar_UART());
             if(ParseMessage(message) == SUCCESS)
-                return SUCCESS;
-            /*message[index++] = ReadChar_UART(); //read the next character into message
-            if(index > 18)                      //if message is full
             {
-                SleepXBee();                    //put the XBee to sleep
-                return ParseMessage(message);   //parse the message and return status
-            }*/
+                SleepXBee();
+                return SUCCESS;
+            }
         }
         if(PeriodPassed())               //if a timer period has passed
         {
@@ -94,8 +92,5 @@ int Cutdown()
         }
     }
     SleepXBee();                         //put the XBee to sleep
-    //if(index)                            //if some characters were read in
-      //  return UNEXPECTED_MESSAGE;       //return error code for undexpected message
-    
     return NO_MESSAGE;                   //return error code for no message
 }
