@@ -56,10 +56,18 @@ int ParseMessage(char* message)
     return SUCCESS;   //if entire message was compared successfully, return success code
 }
 
+void UpdateMessage(char* message, char newChar)
+{
+    int i;
+    for(i = 0; i < 18; ++i)
+        message[i] = message[i+1];
+    message[18] = newChar;
+}
+
 int Cutdown()
 {
     int period = 0;                      //counter for number of timer periods passed
-    int index = 0;                       //counter for characters on received message
+    //int index = 0;                       //counter for characters on received message
     char message[19];                    //holds message received from XBeeR
     WakeXBee();                          //wake the XBee up
     SendString_UART(TERMINATE_M, 20);    //send the terminate message over UART
@@ -69,12 +77,15 @@ int Cutdown()
         //ResetWatchdog();                 //reset the watchdog
         while(DataInFIFO())              //if data was received over UART
         {
-            message[index++] = ReadChar_UART(); //read the next character into message
+            UpdateMessage(message, ReadChar_UART());
+            if(ParseMessage(message) == SUCCESS)
+                return SUCCESS;
+            /*message[index++] = ReadChar_UART(); //read the next character into message
             if(index > 18)                      //if message is full
             {
                 SleepXBee();                    //put the XBee to sleep
                 return ParseMessage(message);   //parse the message and return status
-            }
+            }*/
         }
         if(PeriodPassed())               //if a timer period has passed
         {
@@ -83,8 +94,8 @@ int Cutdown()
         }
     }
     SleepXBee();                         //put the XBee to sleep
-    if(index)                            //if some characters were read in
-        return UNEXPECTED_MESSAGE;       //return error code for undexpected message
+    //if(index)                            //if some characters were read in
+      //  return UNEXPECTED_MESSAGE;       //return error code for undexpected message
     
     return NO_MESSAGE;                   //return error code for no message
 }
