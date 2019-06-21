@@ -17,11 +17,24 @@ void InitUART() {
     SPBRG = 25;
     BRG16 = 0;
     BRGH = 1;
-    
+    TXSTAbits.SYNC = 0;
+    //TXSTAbits.TXEN=1;   //enable UART for transmitting and receiving in asynchronous mode
+    //RCSTAbits.CREN = 1;
+    //RCSTAbits.SPEN=1;
+}
+
+void EnableUART()
+{
     TXSTAbits.TXEN=1;   //enable UART for transmitting and receiving in asynchronous mode
     RCSTAbits.CREN = 1;
-    TXSTAbits.SYNC=0;
-    RCSTAbits.SPEN=1;    
+    RCSTAbits.SPEN=1;
+}
+
+void DisableUART()
+{
+    TXSTAbits.TXEN = 0;   //enable UART for transmitting and receiving in asynchronous mode
+    RCSTAbits.CREN = 0;
+    RCSTAbits.SPEN = 0;
 }
 
 void SendChar_UART(char c) {
@@ -50,7 +63,7 @@ int DataInFIFO()
 int ParseMessage(char* message)
 {
     int index = 0;    //counter for message index
-    while(index < 19) //loop until entire message is compared
+    while(index < SUCCESS_M_LENGTH) //loop until entire message is compared
     {
         if(message[index] != SUCCESS_M[index]) //check to see if current character of message is expected
             return UNEXPECTED_MESSAGE;         //if not, return unexpected message error
@@ -62,9 +75,9 @@ int ParseMessage(char* message)
 void UpdateMessage(char* message, char newChar)
 {
     int i;
-    for(i = 0; i < 18; ++i)
+    for(i = 0; i < SUCCESS_M_LENGTH - 1; ++i)
         message[i] = message[i+1];
-    message[18] = newChar;
+    message[SUCCESS_M_LENGTH - 1] = newChar;
 }
 
 int Cutdown()
@@ -76,6 +89,12 @@ int Cutdown()
     StartTimer();                        //start timer
     while(period < TICKS_25SECONDS)                   //loop for 47 timer periods, 25 seconds (47 * 0.524 ~= 25)
     {
+        if(RCSTAbits.OERR)
+        {
+            DisableUART();
+            WaitS(1);
+            EnableUART();
+        }
         while(DataInFIFO())              //if data was received over UART
         {
             UpdateMessage(message, ReadChar_UART());

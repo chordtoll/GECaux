@@ -17,6 +17,12 @@ void InitUART();
 //send a specified character over UART
 void SendChar_UART(char c);
 
+//enable the UART module
+void EnableUART();
+
+//disable the UART module
+void DisableUART();
+
 //send a specified string over UART
 void SendString_UART(char *s, int length);
 

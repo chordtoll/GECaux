@@ -33,9 +33,7 @@ int main() {
     InitTimer();      //initialize timer
     int retries;      //counter for number of retries attempted
     int cutdown_code; //holds return from cutdown
-    WaitS(5);
     SleepXBee();                          //put the XBee to sleep
-    SleepPic();                           //put the PIC to sleep
     while (1) 
     {
         if(ReadString_GPIO("CUT"))            //if "CUT" was received over GPIO
@@ -43,11 +41,13 @@ int main() {
             ExchangeChar_GPIO('?',1);         //send a '?' over GPIO
             retries = 0;                      //set counter to initial value
             cutdown_code = NO_MESSAGE;        //set cutdown code to initial value
+            EnableUART();
             while(cutdown_code != SUCCESS  && retries++ < CUTDOWN_RETRIES) //loop until max retries attempted, or a successful cutdown was executed
             {
                 cutdown_code = Cutdown();     //attempt to cutdown and store the return code
             }
-            //ResetWatchdog();                //reset the watchdog
+            DisableUART();
+            ResetWatchdog();                //reset the watchdog
             switch(cutdown_code)              //send the status of the cutdown
             {
                 case SUCCESS:
