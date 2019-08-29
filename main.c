@@ -17,6 +17,10 @@
 #pragma config IESO = ON        // Internal External Switchover bit (Internal External Switchover mode is enabled)
 #pragma config FCMEN = ON       // Fail-Safe Clock Monitor Enabled bit (Fail-Safe Clock Monitor is enabled)
 
+///////////////////////////////////////
+//FLIGHT CODE AS OF AUGUST 28TH, 2019//
+///////////////////////////////////////
+
 #include <xc.h>
 #include "pic16f689.h"
 #include "Watchdog.h"
