@@ -33,7 +33,7 @@
 int main() {
     InitUART();       //initialize UART
     InitGPIO();       //initialize GPIO
-    //InitWatchdog(); //initialize watchdog
+    InitWatchdog(); //initialize watchdog
     InitTimer();      //initialize timer
     int retries;      //counter for number of retries attempted
     int cutdown_code; //holds return from cutdown
@@ -67,7 +67,7 @@ int main() {
                     break;
             }
         }                
-        //ResetWatchdog();
+        ResetWatchdog();
     }
     return 0;
 }
